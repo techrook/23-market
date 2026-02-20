@@ -6,9 +6,10 @@ import (
 	"log"
 	"time"
 
+	"github.com/techrook/23-market/config"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/techrook/23-market/config"
 )
 
 var Client *mongo.Client
@@ -55,4 +56,24 @@ func Close() error {
 
 func GetCollection(name string) *mongo.Collection {
 	return DB.Collection(name)
+}
+
+func EnsureIndexes(db *mongo.Database) error {
+	ctx := context.Background()
+	users := db.Collection("users")
+
+	// Unique index on email
+	_, err := users.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys:    primitive.M{"email": 1},
+		Options: options.Index().SetUnique(true),
+	})
+	if err != nil {
+		return err
+	}
+
+	// Optional: index on role for faster queries
+	_, err = users.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys: primitive.M{"role": 1},
+	})
+	return err
 }
