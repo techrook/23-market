@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -64,20 +65,22 @@ func (c *Config) IsDevelopment() bool {
 }
 
 func (c *Config) MongoConnectionString() string {
-	// If MONGO_URI already contains auth, use it as-is
-	if c.MongoURI != "mongodb://localhost:27017" {
-		return fmt.Sprintf("%s/%s", c.MongoURI, c.MongoDatabase)
+	uri := strings.TrimSpace(c.MongoURI)
+	
+	if uri != "" && uri != "mongodb://localhost:27017" {
+		return uri
 	}
+	
 
-	// Build from components for local dev
 	user := os.Getenv("MONGO_USER")
 	pass := os.Getenv("MONGO_PASS")
 	host := getEnv("MONGO_HOST", "localhost")
 	port := getEnv("MONGO_PORT", "27017")
+	db := c.MongoDatabase
 
 	if user != "" && pass != "" {
 		return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?authSource=admin",
-			user, pass, host, port, c.MongoDatabase)
+			user, pass, host, port, db)
 	}
-	return fmt.Sprintf("mongodb://%s:%s/%s", host, port, c.MongoDatabase)
+	return fmt.Sprintf("mongodb://%s:%s/%s", host, port, db)
 }
