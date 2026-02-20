@@ -34,7 +34,7 @@ func main() {
 	userRepo := user.NewUserRepository(database.DB)
 	authRepo:= auth.NewAuthRepository(database.DB)
 
-	authService := auth.NewService(authCfg, userRepo, authRepo) // Pass actual userRepo and authRepo implementations
+	authService := auth.NewService(authCfg, userRepo, authRepo)
 	authHandler := auth.NewHandler(authService, authCfg)
 
 	r := gin.Default()

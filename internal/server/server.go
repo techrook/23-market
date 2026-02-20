@@ -11,12 +11,18 @@ func SetupRoutes(
 	authHandler *auth.Handler,
 	userRepo user.Repository,
 ) {
+	authCfg := auth.LoadConfig()
 	authGroup := r.Group("/auth")
 	{
 		authGroup.POST("/signup", authHandler.Signup)
 		authGroup.POST("/login", authHandler.Login)
 		authGroup.POST("/refresh", authHandler.Refresh)
 		authGroup.POST("/logout", authHandler.Logout)
-		authGroup.GET("/me", authHandler.Me) 
+	}
+
+		protected := r.Group("/users")
+	protected.Use(auth.AuthMiddleware(authCfg))
+	{
+		protected.GET("/me", authHandler.Me)
 	}
 }
