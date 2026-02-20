@@ -20,7 +20,7 @@ type Repository interface {
 }
 
 type mongoRepository struct {
-	collection *mongo.Collection // refresh_tokens collection
+	collection *mongo.Collection 
 }
 
 func NewRepository(db *mongo.Database) Repository {
