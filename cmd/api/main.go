@@ -7,11 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/techrook/23-market/config"
 	"github.com/techrook/23-market/database"
+	"github.com/techrook/23-market/internal/auth"
+	"github.com/techrook/23-market/internal/server"
+	"github.com/techrook/23-market/internal/user"
 )
 
 func main() {
 
 	cfg := config.Load()
+	authCfg := auth.LoadConfig()
 
 	if err := database.Connect(cfg); err != nil {
 		log.Fatalf("Database connection failed: %v", err)
@@ -27,8 +31,15 @@ func main() {
 		}
 	}()
 
+	userRepo := user.NewUserRepository(database.DB)
+	authRepo:= auth.NewAuthRepository(database.DB)
+
+	authService := auth.NewService(authCfg, userRepo, authRepo) // Pass actual userRepo and authRepo implementations
+	authHandler := auth.NewHandler(authService, authCfg)
 
 	r := gin.Default()
+
+	server.SetupRoutes(r,authHandler, userRepo)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("🚀 Server starting on http://localhost%s [%s]", addr, cfg.Environment)

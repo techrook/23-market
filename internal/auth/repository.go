@@ -23,7 +23,7 @@ type mongoRepository struct {
 	collection *mongo.Collection 
 }
 
-func NewRepository(db *mongo.Database) Repository {
+func NewAuthRepository(db *mongo.Database) Repository {
 	return &mongoRepository{
 		collection: db.Collection("refresh_tokens"),
 	}
