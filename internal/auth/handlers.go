@@ -1,4 +1,3 @@
-// auth/handlers.go
 
 package auth
 
