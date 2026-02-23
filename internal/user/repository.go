@@ -20,16 +20,25 @@ type Repository interface {
 	Update(ctx context.Context, u *User) error
 	Verify(ctx context.Context, id primitive.ObjectID) error
 	Exists(ctx context.Context, email string) (bool, error) 
+
+	CreateProfile(ctx context.Context, p *UserProfile) error
+	GetProfileByUserID(ctx context.Context, userID primitive.ObjectID) (*UserProfile, error)
+	UpdateProfile(ctx context.Context, p *UserProfile) error
+	DeleteProfile(ctx context.Context, userID primitive.ObjectID) error
+	ProfileExists(ctx context.Context, userID primitive.ObjectID) (bool, error)
+
 }
 
 
 type UserRepository struct {
 	collection *mongo.Collection
+	profileCollection *mongo.Collection
 }
 
 func NewUserRepository(db *mongo.Database) Repository {
 	return &UserRepository{
 		collection: db.Collection("users"),
+		profileCollection: db.Collection("user_profiles"),
 	}
 }
 
@@ -89,6 +98,61 @@ func (r *UserRepository) Verify(ctx context.Context, id primitive.ObjectID) erro
 
 func (r *UserRepository) Exists(ctx context.Context, email string) (bool, error) {
 	count, err := r.collection.CountDocuments(ctx, bson.M{"email": email})
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func (r *UserRepository) CreateProfile (ctx context.Context, p *UserProfile)error{
+	exists, err := r.ProfileExists(ctx, p.UserId)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return errors.New("user profile already exists")
+	}
+
+	if p.CreatedAt.IsZero() {
+		p.CreatedAt = time.Now()
+	}
+	p.UpdatedAt = time.Now()
+
+	_, err = r.profileCollection.InsertOne(ctx, p)
+	return err
+}
+
+
+func (r *UserRepository) GetProfileByUserID(ctx context.Context, userID primitive.ObjectID) (*UserProfile, error) {
+	var p UserProfile
+	err := r.profileCollection.FindOne(ctx, bson.M{"userid": userID}).Decode(&p)
+	if err == mongo.ErrNoDocuments {
+		return nil, errors.New("user profile not found")
+	}
+	return &p, err
+}
+
+func (r *UserRepository) UpdateProfile(ctx context.Context, p *UserProfile) error {
+
+
+	p.UpdateTimestamp()
+
+	_, err := r.profileCollection.ReplaceOne(
+		ctx,
+		bson.M{"userid": p.UserId},
+		p,
+		options.Replace().SetUpsert(false),
+	)
+	return err
+}
+
+func (r *UserRepository) DeleteProfile(ctx context.Context, userID primitive.ObjectID) error {
+	_, err := r.profileCollection.DeleteOne(ctx, bson.M{"user_id": userID})
+	return err
+}
+
+func (r *UserRepository) ProfileExists(ctx context.Context, userID primitive.ObjectID) (bool, error) {
+	count, err := r.profileCollection.CountDocuments(ctx, bson.M{"user_id": userID})
 	if err != nil {
 		return false, err
 	}
