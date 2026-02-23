@@ -70,3 +70,18 @@ func (p *UserProfile) Apply(req UpdateProfileRequest) {
 	}
 	p.UpdateTimestamp()
 }
+
+func (p *UserProfile) ToResponse() UserProfileResponse {
+    return UserProfileResponse{
+        ID: p.ID.Hex(),
+        UserID: p.UserId.Hex(),
+        FullName: p.Fullname,
+        Phone: p.Phone,
+        Street: p.Street,
+        City: p.City,
+        Country: p.Country,
+        IsDefault: p.IsDefault,
+        CreatedAt: p.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+        UpdatedAt: p.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
+    }
+}

@@ -84,7 +84,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*TokenPair, erro
 		return nil, ErrInvalidCredentials
 	}
 
-	// Optional: Check email verification
+	// Todo: Check email verification
 	// if !u.IsVerified {
 	// 	return nil, ErrEmailNotVerified
 	// }
