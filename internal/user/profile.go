@@ -15,7 +15,7 @@ type UserProfile struct {
 	City string `json:"city" bson:"city"`
 	Country string `json:"country" bson:"country"`
 	IsDefault   bool `json:"is_default" bson:"is_default"`
-		CreatedAt time.Time          `json:"created_at" bson:"created_at"`
+	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
 }
 
