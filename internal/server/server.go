@@ -9,6 +9,7 @@ import (
 func SetupRoutes(
 	r* gin.Engine,
 	authHandler *auth.Handler,
+	userHandler *user.Handler,
 	userRepo user.Repository,
 ) {
 	authCfg := auth.LoadConfig()
@@ -24,5 +25,12 @@ func SetupRoutes(
 	protected.Use(auth.AuthMiddleware(authCfg))
 	{
 		protected.GET("/me", authHandler.Me)
+		protected.POST("/:userID", userHandler.CreateUserProfile)
+		protected.PUT("/:userID", userHandler.UpdateUserProfile)
+		protected.GET("/:userID", userHandler.GetUserProfile)
+		protected.DELETE("/:userID", userHandler.DeleteUserProfile)
 	}
+
+
+
 }
