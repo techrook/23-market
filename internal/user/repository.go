@@ -122,7 +122,28 @@ func (r *UserRepository) CreateProfile (ctx context.Context, p *UserProfile)erro
 }
 
 func (r *UserRepository) RegisterProfile (ctx context.Context, userID primitive.ObjectID ) error {
-	_,err := r.profileCollection.InsertOne(ctx, userID)
+	exists, err := r.ProfileExists(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return ErrUserProfileExists
+	}
+	minimalProfile := &UserProfile{
+		ID:        primitive.NewObjectID(),
+		UserID:    userID,                    
+		Fullname:  "New User",          
+		Phone:     "",                   
+		Street:    "Pending",           
+		City:      "Pending",           
+		Country:   "Pending",                 
+		IsDefault: true,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+
+	_, err = r.profileCollection.InsertOne(ctx, minimalProfile)
 	return err
 }
 func (r *UserRepository) GetProfileByUserID(ctx context.Context, userID primitive.ObjectID) (*UserProfile, error) {

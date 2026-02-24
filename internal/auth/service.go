@@ -3,6 +3,8 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log"
 	"time"
 
 	"github.com/techrook/23-market/internal/user"
@@ -63,11 +65,19 @@ func (s *service) Signup(ctx context.Context, req SignupRequest) (*TokenPair, er
 		return nil, err
 	}
 
+
+
 	newUser := user.NewUser(req.Email, hash, req.Role)
 	if err := s.userRepo.Create(ctx, newUser); err != nil {
 		return nil, err
 	}
 
+	if newUser.Role == user.RoleUser {
+		if err := s.userRepo.RegisterProfile(ctx, newUser.ID); err != nil {
+						 log.Printf("⚠️ Profile creation failed for user %s: %v", newUser.ID.Hex(), err)
+			return nil, fmt.Errorf("failed to initialize profile: %w", err)
+		}
+	}
 
 	return s.generateTokenPair(ctx, newUser)
 }

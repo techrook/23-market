@@ -18,6 +18,7 @@ type Service interface {
 	UpdateUserProfile(ctx context.Context, userID primitive.ObjectID, req UpdateProfileRequest) (UserProfileResponse, error)
 	FindUserProfileByUserId(ctx context.Context, userID primitive.ObjectID) (UserProfileResponse, error)
 	DeleteUserProfile(ctx context.Context, userID primitive.ObjectID) error
+	RegisterProfile (ctx context.Context, userID primitive.ObjectID) error
 }
 
 type service struct {
@@ -88,3 +89,6 @@ func (s *service) DeleteUserProfile(ctx context.Context, userID primitive.Object
 	return s.userRepo.DeleteProfile(ctx, userID)
 }
 
+func (s *service) RegisterProfile(ctx context.Context, userID primitive.ObjectID) error {
+	return s.userRepo.RegisterProfile(ctx,userID)
+} 
