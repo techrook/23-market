@@ -18,7 +18,7 @@ func NewHandler(userService Service) *Handler {
 	}
 }
 
-func (h *Handler) CreateUserProfile(c *gin.Context ) {
+func (h *Handler) CreateUserProfile(c *gin.Context) {
 	var req CreateUserProfileRequest
 	if err := c.ShouldBindBodyWithJSON(&req); err != nil {
 		response.BadRequest(c, "Invalide request format", gin.H{"errors": err.Error()}, response.IsProduction(c))
@@ -50,7 +50,7 @@ func (h *Handler) CreateUserProfile(c *gin.Context ) {
 	response.Created(c, profile, "Profile created successfully")
 }
 
-func (h *Handler) UpdateUserProfile(c *gin.Context,)  {
+func (h *Handler) UpdateUserProfile(c *gin.Context) {
 	var req UpdateProfileRequest
 
 	if err := c.ShouldBindBodyWithJSON(&req); err != nil {
@@ -80,8 +80,7 @@ func (h *Handler) UpdateUserProfile(c *gin.Context,)  {
 	response.OK(c, profile, "Profile updated successfully")
 }
 
-
-func (h *Handler) GetUserProfile(c *gin.Context, )  {
+func (h *Handler) GetUserProfile(c *gin.Context) {
 	userIDVal, exists := c.Get("userID")
 	if !exists {
 		response.Unauthorized(c, "Authentication required", response.IsProduction(c))
@@ -92,8 +91,8 @@ func (h *Handler) GetUserProfile(c *gin.Context, )  {
 		response.InternalError(c, "Invalid user context", nil, response.IsProduction(c))
 		return
 	}
-	
-	profile, err := h.userService.FindUserProfileByUserId(c.Request.Context(), userID)	
+
+	profile, err := h.userService.FindUserProfileByUserId(c.Request.Context(), userID)
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrUserNotFound):
@@ -106,8 +105,7 @@ func (h *Handler) GetUserProfile(c *gin.Context, )  {
 	response.OK(c, profile, "Profile retrieved successfully")
 }
 
-
-func (h *Handler) DeleteUserProfile(c *gin.Context, )  {
+func (h *Handler) DeleteUserProfile(c *gin.Context) {
 	userIDVal, exists := c.Get("userID")
 	if !exists {
 		response.Unauthorized(c, "Authentication required", response.IsProduction(c))

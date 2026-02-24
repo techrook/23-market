@@ -36,7 +36,7 @@ func (s *service) CreateUserProfile(ctx context.Context, userID primitive.Object
 		return UserProfileResponse{}, ErrUserNotFound
 	}
 
-	exists, err := s.userRepo.ProfileExists(ctx, u.UserId)
+	exists, err := s.userRepo.ProfileExists(ctx, u.UserID)
 	if err != nil {
 		return UserProfileResponse{}, err
 	}

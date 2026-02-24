@@ -8,7 +8,7 @@ import (
 
 type UserProfile struct {
 	ID primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	UserId primitive.ObjectID `json:"userid" bson:"userid"`
+	UserID       primitive.ObjectID `json:"user_id" bson:"user_id"`
 	Fullname string 	`json:"fullname" bson:"fullname"`
 	Phone string `json:"phone" bson:"phone"`
 	Street string `json:"street" bson:"street"`
@@ -23,7 +23,7 @@ func NewUserProfile (userID primitive.ObjectID,fullname,phone,street,city,countr
 	now := time.Now()
 	return &UserProfile{
 		ID: primitive.NewObjectID(),
-		UserId: userID,
+		UserID: userID,
 		Fullname: fullname,
 		Phone: phone,
 		Street: street,
@@ -74,7 +74,7 @@ func (p *UserProfile) Apply(req UpdateProfileRequest) {
 func (p *UserProfile) ToResponse() UserProfileResponse {
     return UserProfileResponse{
         ID: p.ID.Hex(),
-        UserID: p.UserId.Hex(),
+        UserID: p.UserID.Hex(),
         FullName: p.Fullname,
         Phone: p.Phone,
         Street: p.Street,

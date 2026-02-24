@@ -1,10 +1,9 @@
-
-
 package user
 
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -105,7 +104,7 @@ func (r *UserRepository) Exists(ctx context.Context, email string) (bool, error)
 }
 
 func (r *UserRepository) CreateProfile (ctx context.Context, p *UserProfile)error{
-	exists, err := r.ProfileExists(ctx, p.UserId)
+	exists, err := r.ProfileExists(ctx, p.UserID)
 	if err != nil {
 		return err
 	}
@@ -125,11 +124,14 @@ func (r *UserRepository) CreateProfile (ctx context.Context, p *UserProfile)erro
 
 func (r *UserRepository) GetProfileByUserID(ctx context.Context, userID primitive.ObjectID) (*UserProfile, error) {
 	var p UserProfile
-	err := r.profileCollection.FindOne(ctx, bson.M{"userid": userID}).Decode(&p)
+	fmt.Println("Getting profile for userID:", userID) // Debug log
+	err := r.profileCollection.FindOne(ctx, bson.M{"user_id": userID}).Decode(&p)
 	if err == mongo.ErrNoDocuments {
 		return nil, errors.New("user profile not found")
 	}
+	fmt.Printf("Found profile: %+v\n", p) // Debug log
 	return &p, err
+
 }
 
 func (r *UserRepository) UpdateProfile(ctx context.Context, p *UserProfile) error {
@@ -139,7 +141,7 @@ func (r *UserRepository) UpdateProfile(ctx context.Context, p *UserProfile) erro
 
 	_, err := r.profileCollection.ReplaceOne(
 		ctx,
-		bson.M{"userid": p.UserId},
+		bson.M{"user_id": p.UserID},
 		p,
 		options.Replace().SetUpsert(false),
 	)
