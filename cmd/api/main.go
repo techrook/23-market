@@ -35,11 +35,13 @@ func main() {
 	authRepo:= auth.NewAuthRepository(database.DB)
 
 	authService := auth.NewService(authCfg, userRepo, authRepo)
+
+	userHandler := user.NewHandler(user.NewService(userRepo))
 	authHandler := auth.NewHandler(authService, authCfg)
 
 	r := gin.Default()
 
-	server.SetupRoutes(r,authHandler, userRepo)
+	server.SetupRoutes(r,authHandler,userHandler, userRepo)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("🚀 Server starting on http://localhost%s [%s]", addr, cfg.Environment)
