@@ -25,7 +25,7 @@ type Repository interface {
 	UpdateProfile(ctx context.Context, p *UserProfile) error
 	DeleteProfile(ctx context.Context, userID primitive.ObjectID) error
 	ProfileExists(ctx context.Context, userID primitive.ObjectID) (bool, error)
-
+	RegisterProfile(ctx context.Context, userID primitive.ObjectID) error
 }
 
 
@@ -121,7 +121,10 @@ func (r *UserRepository) CreateProfile (ctx context.Context, p *UserProfile)erro
 	return err
 }
 
-
+func (r *UserRepository) RegisterProfile (ctx context.Context, userID primitive.ObjectID ) error {
+	_,err := r.profileCollection.InsertOne(ctx, userID)
+	return err
+}
 func (r *UserRepository) GetProfileByUserID(ctx context.Context, userID primitive.ObjectID) (*UserProfile, error) {
 	var p UserProfile
 	fmt.Println("Getting profile for userID:", userID) // Debug log
