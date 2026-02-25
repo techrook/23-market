@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/techrook/23-market/internal/user"
+	"github.com/techrook/23-market/internal/vendor"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -33,13 +34,15 @@ type service struct {
 	cfg      *Config
 	userRepo user.Repository
 	authRepo Repository
+	vendorRepo         vendor.VendorRepository
 }
 
-func NewService(cfg *Config, userRepo user.Repository, authRepo Repository) Service {
+func NewService(cfg *Config, userRepo user.Repository, authRepo Repository, vendorRepo vendor.VendorRepository) Service {
 	return &service{
 		cfg:      cfg,
 		userRepo: userRepo,
 		authRepo: authRepo,
+		vendorRepo: vendorRepo,
 	}
 }
 
@@ -76,6 +79,12 @@ func (s *service) Signup(ctx context.Context, req SignupRequest) (*TokenPair, er
 		if err := s.userRepo.RegisterProfile(ctx, newUser.ID); err != nil {
 						 log.Printf("⚠️ Profile creation failed for user %s: %v", newUser.ID.Hex(), err)
 			return nil, fmt.Errorf("failed to initialize profile: %w", err)
+		}
+	}
+	if newUser.Role == user.RoleVendor {
+		if err := s.vendorRepo.CreateVendorProfile(ctx, newUser.ID); err != nil {
+						 log.Printf("⚠️ Vendor profile creation failed for user %s: %v", newUser.ID.Hex(), err)
+			return nil, fmt.Errorf("failed to initialize vendor profile: %w", err)
 		}
 	}
 
