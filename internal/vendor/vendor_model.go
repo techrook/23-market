@@ -23,7 +23,7 @@ type Vendor struct {
 	UpdatedAt    time.Time          `json:"updated_at" bson:"updated_at"`
 }
 
-func NewVendor (userID primitive.ObjectID,businessname,slug, status string,ratingAverage float64, ratingCount float32 ) *Vendor{
+func NewVendor (userID primitive.ObjectID,businessname,slug string, status VendorStatus,ratingAverage float64, ratingCount float32 ) *Vendor{
 	now:=time.Now()
 	return &Vendor{
 		ID: primitive.NewObjectID(),
@@ -31,8 +31,8 @@ func NewVendor (userID primitive.ObjectID,businessname,slug, status string,ratin
 		BusinessName: businessname,
 		Slug: slug,
 		Status: status,
-		ratingAverage: ratingAverage,
-		ratingCount: ratingCount,
+		RatingAverage: ratingAverage,
+		RatingCount: int32(ratingCount),
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
