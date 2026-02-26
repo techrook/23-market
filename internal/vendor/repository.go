@@ -14,7 +14,7 @@ type Repository interface{
 	CreateVendorProfile(ctx context.Context,  userID primitive.ObjectID) error
 	CompleteVendorRegistration(ctx context.Context, userID primitive.ObjectID, businessName, slug string) error
 	GetVendorByUserID(ctx context.Context, userID primitive.ObjectID) (*Vendor, error)
-	UpdateVendor(ctx context.Context, v *Vendor) error
+	UpdateVendor(ctx context.Context, userID primitive.ObjectID, businessName *string, slug *string) error
 	DeactivateVendor(ctx context.Context, id primitive.ObjectID) error
 	VendorExist(ctx context.Context, userID primitive.ObjectID) (bool, error)
 }
@@ -74,12 +74,23 @@ func (r *VendorRepository) GetVendorByUserID(ctx context.Context, userID primiti
 	return &v, err
 }
 
-func (r *VendorRepository) UpdateVendor(ctx context.Context, v *Vendor) error {
-	v.UpdateTimestamp()
-	_, err := r.vendorCollection.ReplaceOne(
+func (r *VendorRepository) UpdateVendor(ctx context.Context, userID primitive.ObjectID, businessName *string, slug *string) error {
+	vendor, err := r.GetVendorByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	
+	if businessName != nil {
+		vendor.BusinessName = *businessName
+	}
+	if slug != nil {
+		vendor.Slug = *slug
+	}
+	vendor.UpdateTimestamp()
+	_, err = r.vendorCollection.ReplaceOne(
 		ctx,
-		bson.M{"_id": v.ID},
-		v,
+		bson.M{"_id": vendor.ID},
+		vendor,
 	)
 	return err	
 }
