@@ -41,3 +41,27 @@ func NewVendor (userID primitive.ObjectID,businessname,slug string, status Vendo
 func (v *Vendor) UpdateTimestamp() {
 	v.UpdatedAt = time.Now()
 }
+
+func (v *Vendor) ApplyUpdate(req UpdateVendorProfileRequest) {
+	if req.BusinessName != nil {
+		v.BusinessName = *req.BusinessName
+	}
+	if req.Slug != nil {
+		v.Slug = *req.Slug
+	}
+	v.UpdateTimestamp()
+}
+
+func (v *Vendor) ToResponse() *VendorProfileResponse {
+	return &VendorProfileResponse{
+		ID: v.ID.Hex(),
+		UserID: v.UserID.Hex(),
+		BusinessName: v.BusinessName,
+		Slug: v.Slug,
+		Status: string(v.Status),
+		RatingAverage: v.RatingAverage,
+		RatingCount: v.RatingCount,
+		CreatedAt: v.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		UpdatedAt: v.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
+	}
+}
