@@ -54,7 +54,7 @@ func (h *Handler) UpdateUserProfile(c *gin.Context) {
 	var req UpdateProfileRequest
 
 	if err := c.ShouldBindBodyWithJSON(&req); err != nil {
-		response.BadRequest(c, "Invalide request format", gin.H{"errors": err.Error()}, response.IsProduction(c))
+		response.BadRequest(c, "Invalid request format", gin.H{"errors": err.Error()}, response.IsProduction(c))
 		return
 	}
 	userIDVal, exists := c.Get("userID")
