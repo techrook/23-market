@@ -10,6 +10,7 @@ import (
 	"github.com/techrook/23-market/internal/auth"
 	"github.com/techrook/23-market/internal/server"
 	"github.com/techrook/23-market/internal/user"
+	"github.com/techrook/23-market/internal/vendor"
 )
 
 func main() {
@@ -33,15 +34,19 @@ func main() {
 
 	userRepo := user.NewUserRepository(database.DB)
 	authRepo:= auth.NewAuthRepository(database.DB)
+	vendorRepo := vendor.NewVendorRepository(database.DB)
 
-	authService := auth.NewService(authCfg, userRepo, authRepo)
+	authService := auth.NewService(authCfg, userRepo, authRepo, vendorRepo)
 
 	userHandler := user.NewHandler(user.NewService(userRepo))
 	authHandler := auth.NewHandler(authService, authCfg)
 
+	vendorService := vendor.NewService(vendorRepo)
+	vendorHandler := vendor.NewHandler(vendorService)
+
 	r := gin.Default()
 
-	server.SetupRoutes(r,authHandler,userHandler, userRepo)
+	server.SetupRoutes(r,authHandler,userHandler,vendorHandler, userRepo)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("🚀 Server starting on http://localhost%s [%s]", addr, cfg.Environment)

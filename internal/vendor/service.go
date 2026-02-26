@@ -14,10 +14,10 @@ type Service interface {
 }
 
 type service struct{
-	vendorRepo VendorRepository
+	vendorRepo Repository
 }
 
-func NewService(vendorRepo VendorRepository) Service {
+func NewService(vendorRepo Repository) Service {
 	return &service{
 		vendorRepo: vendorRepo,
 	}

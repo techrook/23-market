@@ -34,10 +34,10 @@ type service struct {
 	cfg      *Config
 	userRepo user.Repository
 	authRepo Repository
-	vendorRepo         vendor.VendorRepository
+	vendorRepo         vendor.Repository
 }
 
-func NewService(cfg *Config, userRepo user.Repository, authRepo Repository, vendorRepo vendor.VendorRepository) Service {
+func NewService(cfg *Config, userRepo user.Repository, authRepo Repository, vendorRepo vendor.Repository) Service {
 	return &service{
 		cfg:      cfg,
 		userRepo: userRepo,
