@@ -15,9 +15,9 @@ type VendorProfileResponse struct {
 	UserID       string  `json:"user_id"`
 	BusinessName string  `json:"business_name"`
 	Slug         string  `json:"slug"`
-	Status       int     `json:"status"`
-	Rating       float64 `json:"rating"`
-	TotalReviews int     `json:"total_reviews"`
+	Status       string     `json:"status"`
+	RatingAverage       float64 `json:"rating_average"`
+	RatingCount       int32 `json:"rating_count"`
 	CreatedAt    string  `json:"created_at"`
 	UpdatedAt    string  `json:"updated_at"`
 }	
